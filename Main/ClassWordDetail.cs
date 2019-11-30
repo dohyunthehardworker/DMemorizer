@@ -31,6 +31,15 @@ namespace Main
                    WordMeaning == detail.WordMeaning &&
                    WordPronounce == detail.WordPronounce;
         }
+
+        public ClassWordDetail(int wordIdx, string wordParts, string wordMeaning, string wordPronounce)
+        {
+            WordIdx = wordIdx;
+            WordParts = wordParts;
+            WordMeaning = wordMeaning;
+            WordPronounce = wordPronounce;
+        }
+
         public override string ToString()
         {
             return "WordDetailIdx = " + WordDetailIdx + " , WordIdx = " + WordIdx + " WordParts , = " + WordParts

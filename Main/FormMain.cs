@@ -25,10 +25,14 @@ namespace Main
         int test_idx = 0;
         int test_group_idx = 0;
         int lang_idx = 0;
+        bool comboLoaded = false;
+        List<ClassWord> classWordlist;
         string connectionString = @"Data Source=leedohyun.asuscomm.com,1433;Initial Catalog=DMemorizer;User ID=sa;Password=P@ssw0rd;";
         public FormMain()
         {
             InitializeComponent();
+            this.WindowState = FormWindowState.Maximized;
+
         }
 
         /***********************************************************************************
@@ -66,9 +70,10 @@ namespace Main
                     flowLayoutPanelCombo.Show();
                     buttonLogin.Hide();
                     buttonSignUp.Hide();
-                    setComboBoxLanguage();
-
                     labelName.Text = userName;
+                    setComboBoxLanguage();
+                    flowLayoutPanelCombo.Visible = true;
+                    comboLoaded = true;
                 }
                 else
                 {
@@ -110,8 +115,10 @@ namespace Main
                     flowLayoutPanelCombo.Show();
                     buttonLogin.Hide();
                     buttonSignUp.Hide();
-                    setComboBoxLanguage();
                     labelName.Text = userName;
+                    setComboBoxLanguage();
+                    flowLayoutPanelCombo.Visible = true;
+                    comboLoaded = true;
                 }
                 else
                 {
@@ -137,6 +144,11 @@ namespace Main
             userName = "";
             labelName.Text = "";
 
+            last_test_level = 0; //마지막 공부한 위치
+            test_idx = 0;
+            test_group_idx = 0;
+            lang_idx = 0;
+
             buttonAdmin.Hide();
             buttonLogOut.Hide();
             menuStripMain.Hide();
@@ -144,6 +156,8 @@ namespace Main
             buttonSignUp.Show();
             flowLayoutPanelCombo.Hide();
             toolStripStatusLabelMain.Text = "로그아웃 성공";
+            flowLayoutPanelCombo.Visible = false;
+            comboLoaded = false;
             LogIn();
         }
 
@@ -291,12 +305,12 @@ namespace Main
                     DataSet dataSet = new DataSet();
                     dataAdapter.Fill(dataSet);
                     connection.Close();
-                    
+
                     test_idx = (int)dataSet.Tables[0].Rows[0]["test_idx"];
                     test_group_idx = (int)dataSet.Tables[0].Rows[0]["test_group_idx"];
                     lang_idx = (int)dataSet.Tables[0].Rows[0]["lang_idx"];
 
-                    //콤보박스 설치
+                    //언어 콤보박스 설치
                     try
                     {
                         connection = new SqlConnection(connectionString);
@@ -310,8 +324,74 @@ namespace Main
                         comboBoxLanguage.DataSource = dataSet.Tables[0];
                         comboBoxLanguage.DisplayMember = "lang_name";
                         comboBoxLanguage.ValueMember = "lang_idx";
-
                         comboBoxLanguage.SelectedValue = lang_idx;
+                        comboBoxLanguage.Show();
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                    }
+
+                    //시험 그룹 콤보박스 설치
+                    try
+                    {
+                        connection = new SqlConnection(connectionString);
+                        command = new SqlCommand("SELECT * FROM test_group_mst", connection);
+                        connection.Open();
+                        dataAdapter = new SqlDataAdapter(command);
+                        dataSet = new DataSet();
+                        dataAdapter.Fill(dataSet);
+                        connection.Close();
+                        int count = dataSet.Tables[0].Rows.Count;
+                        comboBoxTestGroup.DataSource = dataSet.Tables[0];
+                        comboBoxTestGroup.DisplayMember = "test_group_name";
+                        comboBoxTestGroup.ValueMember = "test_group_idx";
+                        comboBoxTestGroup.SelectedValue = test_group_idx;
+                        comboBoxTestGroup.Show();
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                    }
+
+                    //시험 콤보박스 설치
+                    try
+                    {
+                        connection = new SqlConnection(connectionString);
+                        command = new SqlCommand("SELECT * FROM test_mst", connection);
+                        connection.Open();
+                        dataAdapter = new SqlDataAdapter(command);
+                        dataSet = new DataSet();
+                        dataAdapter.Fill(dataSet);
+                        connection.Close();
+                        int count = dataSet.Tables[0].Rows.Count;
+                        comboBoxTest.DataSource = dataSet.Tables[0];
+                        comboBoxTest.DisplayMember = "test_name";
+                        comboBoxTest.ValueMember = "test_idx";
+                        comboBoxTest.SelectedValue = test_idx;
+                        comboBoxTest.Show();
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                    }
+
+                    //시험 레벨 콤보박스 설치
+                    try
+                    {
+                        connection = new SqlConnection(connectionString);
+                        command = new SqlCommand("SELECT * FROM test_level_mst", connection);
+                        connection.Open();
+                        dataAdapter = new SqlDataAdapter(command);
+                        dataSet = new DataSet();
+                        dataAdapter.Fill(dataSet);
+                        connection.Close();
+                        int count = dataSet.Tables[0].Rows.Count;
+                        comboBoxTestLevel.DataSource = dataSet.Tables[0];
+                        comboBoxTestLevel.DisplayMember = "test_level_name";
+                        comboBoxTestLevel.ValueMember = "test_level_idx";
+                        comboBoxTestLevel.SelectedValue = last_test_level;
+                        comboBoxTestLevel.Show();
                     }
                     catch (Exception exception)
                     {
@@ -319,6 +399,38 @@ namespace Main
                     }
 
 
+                    try
+                    {
+                        //플로우레이아웃패널내의 컨트롤 전체 삭제
+                        flowLayoutPanelDay.Controls.Clear();
+
+                        //MessageBox.Show(comboBoxTestLevel.SelectedValue.ToString());
+
+                        //일자별 데이터 전체 호출
+                        connection = new SqlConnection(connectionString);
+                        command = new SqlCommand("SELECT DISTINCT word_day_info FROM word_mst WHERE test_level_idx = @test_level_idx ORDER BY word_day_info", connection);
+                        command.Parameters.AddWithValue("@test_level_idx", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
+                        connection.Open();
+                        dataAdapter = new SqlDataAdapter(command);
+                        dataSet = new DataSet();
+                        dataAdapter.Fill(dataSet);
+                        connection.Close();
+                        int count = dataSet.Tables[0].Rows.Count;
+                        //MessageBox.Show(count.ToString());
+                        for (int i = 0; i < count; i++)
+                        {
+                            Button button = new Button();
+                            button.Tag = i;
+                            button.Text = "Day " + dataSet.Tables[0].Rows[i]["word_day_info"].ToString();
+                            button.Click += DayButton_Click;
+                            flowLayoutPanelDay.Controls.Add(button);
+                        }
+                        flowLayoutPanelDay.Show();
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -328,6 +440,10 @@ namespace Main
             }
             else
             {
+                comboBoxTestGroup.Hide();
+                comboBoxTest.Hide();
+                comboBoxTestLevel.Hide();
+
                 try
                 {
                     SqlConnection connection = new SqlConnection(connectionString);
@@ -341,6 +457,7 @@ namespace Main
                     comboBoxLanguage.DataSource = dataSet.Tables[0];
                     comboBoxLanguage.DisplayMember = "lang_name";
                     comboBoxLanguage.ValueMember = "lang_idx";
+                    comboBoxLanguage.Show();
                 }
                 catch (Exception exception)
                 {
@@ -753,10 +870,15 @@ namespace Main
                                                 "FROM" +
                                                 "   test_level_mst " +
                                                 "WHERE" +
-                                                "   test_level_name = @test_level_name ";
+                                                "   test_level_name = @test_level_name "
+                                                + " AND "
+                                                + " test_idx = @test_idx "
+                                                ;
 
                                             command = new SqlCommand(query, connection);
                                             command.Parameters.AddWithValue("@test_level_name", test_level_name);
+                                            command.Parameters.AddWithValue("@test_idx", test_idx);
+                                            
                                             dataAdapter = new SqlDataAdapter(command);
                                             dataSet = new DataSet();
                                             dataAdapter.Fill(dataSet);
@@ -793,10 +915,14 @@ namespace Main
                                                 "FROM" +
                                                 "   test_level_mst " +
                                                 "WHERE" +
-                                                "   test_level_name = @test_level_name ";
+                                                "   test_level_name = @test_level_name "
+                                                + " AND "
+                                                + " test_idx = @test_idx "
+                                                ;
 
                                                     command = new SqlCommand(query, connection);
                                                     command.Parameters.AddWithValue("@test_level_name", test_level_name);
+                                                    command.Parameters.AddWithValue("@test_idx", test_idx);
                                                     dataAdapter = new SqlDataAdapter(command);
                                                     dataSet = new DataSet();
                                                     dataAdapter.Fill(dataSet);
@@ -1048,6 +1174,345 @@ namespace Main
             catch (Exception ex)
             {
                 MessageBox.Show("에러 : " + ex.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        /// <summary>
+        /// 언어 콤보박스 선택 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboBoxLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboLoaded)
+            {
+                try
+                {
+                    //MessageBox.Show("comboBoxLanguage_SelectedIndexChanged");
+                    SqlConnection connection = new SqlConnection(connectionString);
+                    SqlCommand command = new SqlCommand("SELECT * FROM test_group_mst WHERE lang_idx = @lang_idx", connection);
+                    command.Parameters.AddWithValue("@lang_idx", Int32.Parse(comboBoxLanguage.SelectedValue.ToString()));
+                    connection.Open();
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.Fill(dataSet);
+                    connection.Close();
+                    int count = dataSet.Tables[0].Rows.Count;
+                    comboBoxTestGroup.DataSource = dataSet.Tables[0];
+                    comboBoxTestGroup.DisplayMember = "test_group_name";
+                    comboBoxTestGroup.ValueMember = "test_group_idx";
+
+                    comboBoxTestGroup.Show();
+                    comboBoxTest.Hide();
+                    comboBoxTestLevel.Hide();
+                    flowLayoutPanelDay.Hide();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+
+        }
+        /// <summary>
+        /// 시험그룹 콤보박스 선택 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboBoxTestGroup_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboLoaded)
+            {
+                try
+                {
+                    //MessageBox.Show("comboBoxTestGroup_SelectedIndexChanged");
+                    SqlConnection connection = new SqlConnection(connectionString);
+                    SqlCommand command = new SqlCommand("SELECT * FROM test_mst WHERE test_group_idx = @test_group_idx", connection);
+                    command.Parameters.AddWithValue("@test_group_idx", Int32.Parse(comboBoxTestGroup.SelectedValue.ToString()));
+                    connection.Open();
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.Fill(dataSet);
+                    connection.Close();
+                    int count = dataSet.Tables[0].Rows.Count;
+                    comboBoxTest.DataSource = dataSet.Tables[0];
+                    comboBoxTest.DisplayMember = "test_name";
+                    comboBoxTest.ValueMember = "test_idx";
+
+                    comboBoxTest.Show();
+                    comboBoxTestLevel.Hide();
+                    flowLayoutPanelDay.Hide();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+        }
+        /// <summary>
+        /// 시험 콤보박스 선택 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboBoxTest_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboLoaded)
+            {
+                try
+                {
+                    //MessageBox.Show("comboBoxTest_SelectedIndexChanged");
+                    SqlConnection connection = new SqlConnection(connectionString);
+                    SqlCommand command = new SqlCommand("SELECT * FROM test_level_mst WHERE test_idx = @test_idx", connection);
+                    command.Parameters.AddWithValue("@test_idx", Int32.Parse(comboBoxTest.SelectedValue.ToString()));
+                    connection.Open();
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.Fill(dataSet);
+                    connection.Close();
+                    int count = dataSet.Tables[0].Rows.Count;
+                    comboBoxTestLevel.DataSource = dataSet.Tables[0];
+                    comboBoxTestLevel.DisplayMember = "test_level_name";
+                    comboBoxTestLevel.ValueMember = "test_level_idx";
+                    //if(count != 0)
+                    comboBoxTestLevel.Show();
+                    flowLayoutPanelDay.Hide();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+        }
+        /// <summary>
+        /// 시험레벨 콤보박스 선택 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void comboBoxTestLevel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (comboLoaded)
+            {
+                try
+                {
+                    //플로우레이아웃패널내의 컨트롤 전체 삭제
+                    flowLayoutPanelDay.Controls.Clear();
+
+                    //MessageBox.Show(comboBoxTestLevel.SelectedValue.ToString());
+
+                    //일자별 데이터 전체 호출
+                    SqlConnection connection = new SqlConnection(connectionString);
+                    SqlCommand command = new SqlCommand("SELECT DISTINCT word_day_info FROM word_mst WHERE test_level_idx = @test_level_idx ORDER BY word_day_info", connection);
+                    command.Parameters.AddWithValue("@test_level_idx", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
+                    connection.Open();
+                    SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                    DataSet dataSet = new DataSet();
+                    dataAdapter.Fill(dataSet);
+                    connection.Close();
+                    int count = dataSet.Tables[0].Rows.Count;
+                    //MessageBox.Show(count.ToString());
+                    for (int i = 0; i < count; i++)
+                    {
+                        Button button = new Button();
+                        button.Tag = i;
+                        button.Text = "Day " + dataSet.Tables[0].Rows[i]["word_day_info"].ToString();
+                        button.Click += DayButton_Click;
+                        flowLayoutPanelDay.Controls.Add(button);
+                    }
+                    flowLayoutPanelDay.Show();
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                }
+            }
+        }
+        /// <summary>
+        /// 데일리 버튼 클릭 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        void DayButton_Click(object sender, EventArgs e)
+        {
+            //listViewWordList.View = View.Details;
+            richTextBoxWord.Text = "";
+
+            var button = sender as Button;
+            if (button != null)
+            {
+                //MessageBox.Show(button.Text.ToString().Replace("Day", "").Trim());
+                string day = button.Text.ToString().Replace("Day", "").Trim();
+                //일자별 데이터 전체 호출
+                SqlConnection connection = new SqlConnection(connectionString);
+                SqlCommand command = new SqlCommand("SELECT m.word, m.word_dup_no, m.word_idx, d.word_pronounce, d.word_parts, d.word_meaning FROM word_mst m INNER JOIN word_dtl d ON m.word_idx = d.word_idx WHERE m.test_level_idx = @test_level_idx AND m.word_day_info = @word_day_info ORDER BY m.word_idx;", connection);
+                command.Parameters.AddWithValue("@test_level_idx", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
+                command.Parameters.AddWithValue("@word_day_info", day);
+                connection.Open();
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
+                DataSet dataSet = new DataSet();
+                dataAdapter.Fill(dataSet);
+                connection.Close();
+                int count = dataSet.Tables[0].Rows.Count;
+                //MessageBox.Show(count.ToString());
+
+                //리스트에 단어 데이터를 담는다.
+                classWordlist = new List<ClassWord>();
+                List<ClassWordDetail> classWordDetailList = new List<ClassWordDetail>();
+                listViewWordList.Items.Clear();
+                for (int i = 0; i < count; i++)
+                {
+                    ClassWord classWord;
+                    //첫 순회의 경우 -1 하면 안됨
+                    if (i == 0)
+                    {
+                        classWordDetailList = new List<ClassWordDetail>();
+                        //MessageBox.Show(dataSet.Tables[0].Rows[i]["word"].ToString());
+
+                        ClassWordDetail detail
+                            = new ClassWordDetail(
+                                Int32.Parse(dataSet.Tables[0].Rows[i]["word_idx"].ToString())
+                                , dataSet.Tables[0].Rows[i]["word_parts"].ToString()
+                                , dataSet.Tables[0].Rows[i]["word_meaning"].ToString()
+                                , dataSet.Tables[0].Rows[i]["word_pronounce"].ToString()
+                                );
+                        classWordDetailList.Add(detail);
+                        classWord
+                            = new ClassWord(
+                                Int32.Parse(dataSet.Tables[0].Rows[i]["word_idx"].ToString())
+                                , dataSet.Tables[0].Rows[i]["word"].ToString()
+                                , Int32.Parse(dataSet.Tables[0].Rows[i]["word_dup_no"].ToString())
+                                , classWordDetailList
+                            );
+                        classWordlist.Add(classWord);
+
+                    }
+                    else
+                    {//첫 순회가 아닌 경우
+                        if (dataSet.Tables[0].Rows[i]["word_idx"].ToString().Equals(dataSet.Tables[0].Rows[i - 1]["word_idx"].ToString()))
+                        {//앞순회의 단어랑 같은 단어인 경우 상세 내용만 추가하면 됨
+                            classWord = classWordlist.Last();
+                            ClassWordDetail detail
+                            = new ClassWordDetail(
+                                Int32.Parse(dataSet.Tables[0].Rows[i]["word_idx"].ToString())
+                                , dataSet.Tables[0].Rows[i]["word_parts"].ToString()
+                                , dataSet.Tables[0].Rows[i]["word_meaning"].ToString()
+                                , dataSet.Tables[0].Rows[i]["word_pronounce"].ToString()
+                                );
+                            classWord.WordDetailList.Add(detail);
+                            classWordlist[classWordlist.Count() - 1] = classWord;
+                        }
+                        else
+                        {//새 단어인 경우
+
+                            classWordDetailList = new List<ClassWordDetail>();
+                            ClassWordDetail detail
+                                = new ClassWordDetail(
+                                    Int32.Parse(dataSet.Tables[0].Rows[i]["word_idx"].ToString())
+                                    , dataSet.Tables[0].Rows[i]["word_parts"].ToString()
+                                    , dataSet.Tables[0].Rows[i]["word_meaning"].ToString()
+                                    , dataSet.Tables[0].Rows[i]["word_pronounce"].ToString()
+                                    );
+                            classWordDetailList.Add(detail);
+                            classWord
+                                = new ClassWord(
+                                    Int32.Parse(dataSet.Tables[0].Rows[i]["word_idx"].ToString())
+                                    , dataSet.Tables[0].Rows[i]["word"].ToString()
+                                    , Int32.Parse(dataSet.Tables[0].Rows[i]["word_dup_no"].ToString())
+                                    , classWordDetailList
+                                );
+                            classWordlist.Add(classWord);
+                        }
+                    }
+                }
+
+            }
+            for (int i = 0; i < classWordlist.Count(); i++)
+            {
+                listViewWordList.Items.Add(classWordlist[i].Word).SubItems.Add(classWordlist[i].WordIdx.ToString());
+                
+            }
+            //MessageBox.Show("Message here");
+        }
+
+        /// <summary>
+        /// 단어 리스트 선택 변경시 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void listViewWordList_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (listViewWordList.SelectedIndices.Count <= 0)
+            {
+                return;
+            }
+            int intselectedindex = listViewWordList.SelectedIndices[0];
+            if (intselectedindex >= 0)
+            {
+                String text = listViewWordList.Items[intselectedindex].Text;
+                richTextBoxWord.Clear();
+                richTextBoxWord.SelectionFont = new Font("굴림", 96, FontStyle.Bold);
+                richTextBoxWord.AppendText(text);
+                richTextBoxWord.SelectionAlignment = HorizontalAlignment.Center;
+
+                //MessageBox.Show(listViewWordList.Items[intselectedindex].SubItems[1].Text);
+                //textBoxWord.Text = text;
+                richTextBoxWord.Left = (this.ClientSize.Width - richTextBoxWord.Width) / 2;
+
+                ClassWord classWord = classWordlist.Find(x => x.WordIdx == Int32.Parse(listViewWordList.Items[intselectedindex].SubItems[1].Text));
+
+                List<ClassWordDetail> classWordDetaillist = classWord.WordDetailList;
+
+                bool flag = true;
+                foreach (ClassWordDetail details in classWordDetaillist)
+                {
+                    richTextBoxWord.SelectionFont = new Font("굴림", 52, FontStyle.Regular);
+                    if(flag)
+                    {
+                        richTextBoxWord.AppendText("\n[ " + details.WordPronounce + " ]\n");
+                        flag = false;
+                    }
+                    
+                    richTextBoxWord.SelectionFont = new Font("굴림", 20, FontStyle.Regular);
+                    richTextBoxWord.AppendText("\n【" + details.WordParts + "】 " + details.WordMeaning);
+                }
+
+                
+
+                //textBoxPronounce.Top = textBoxWord.Bottom;
+                //textBoxPronounce.Left = (this.ClientSize.Width - textBoxPronounce.Width) / 2;
+            }
+
+            //MessageBox.Show(listViewWordList.SelectedItems[0].Text);
+        }
+        /// <summary>
+        /// 이전버튼 클릭 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonWordBefore_Click(object sender, EventArgs e)
+        {
+            if (listViewWordList.SelectedIndices[0] == 0)
+            {
+                listViewWordList.Items[listViewWordList.Items.Count -1 ].Selected = true;
+            }
+            else
+            {
+                listViewWordList.Items[listViewWordList.SelectedIndices[0] -1].Selected = true;
+            }
+        }
+        /// <summary>
+        /// 다음버튼 클릭 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void buttonWordAfter_Click(object sender, EventArgs e)
+        {
+            if (listViewWordList.SelectedIndices[0] == listViewWordList.Items.Count - 1)
+            {
+                listViewWordList.Items[0].Selected = true;
+            }
+            else
+            {
+                listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
             }
         }
     }
