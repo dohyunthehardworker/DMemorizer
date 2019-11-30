@@ -305,6 +305,7 @@
             this.buttonWordBefore.TabIndex = 27;
             this.buttonWordBefore.Text = "이전";
             this.buttonWordBefore.UseVisualStyleBackColor = true;
+            this.buttonWordBefore.Visible = false;
             this.buttonWordBefore.Click += new System.EventHandler(this.buttonWordBefore_Click);
             // 
             // buttonWordAfter
@@ -316,6 +317,7 @@
             this.buttonWordAfter.TabIndex = 28;
             this.buttonWordAfter.Text = "다음";
             this.buttonWordAfter.UseVisualStyleBackColor = true;
+            this.buttonWordAfter.Visible = false;
             this.buttonWordAfter.Click += new System.EventHandler(this.buttonWordAfter_Click);
             // 
             // richTextBoxWord
@@ -325,6 +327,8 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.richTextBoxWord.BackColor = System.Drawing.SystemColors.Control;
             this.richTextBoxWord.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxWord.CausesValidation = false;
+            this.richTextBoxWord.Cursor = System.Windows.Forms.Cursors.Default;
             this.richTextBoxWord.Font = new System.Drawing.Font("굴림", 72F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
             this.richTextBoxWord.Location = new System.Drawing.Point(127, 57);
             this.richTextBoxWord.Name = "richTextBoxWord";

@@ -38,7 +38,7 @@ namespace Main
             //this.WindowState = FormWindowState.Maximized;
 
             //2초
-            System.Timers.Timer autoTimer = new System.Timers.Timer(4000);
+            System.Timers.Timer autoTimer = new System.Timers.Timer(3000);
             autoTimer.AutoReset = true;
             autoTimer.Elapsed += new System.Timers.ElapsedEventHandler(AutoTimer);
             autoTimer.Start();
@@ -80,7 +80,7 @@ namespace Main
 
                 if (result == 1)
                 {//회원가입 성공
-                    formSignUp.Close();
+                    /*formSignUp.Close();
                     buttonLogOut.Show();
                     menuStripMain.Show();
                     flowLayoutPanelCombo.Show();
@@ -91,7 +91,8 @@ namespace Main
                     flowLayoutPanelCombo.Visible = true;
                     listViewWordList.Show();
                     richTextBoxWord.Show();
-                    comboLoaded = true;
+                    comboLoaded = true;*/
+                    LogIn();
                 }
                 else
                 {
@@ -179,6 +180,9 @@ namespace Main
             listViewWordList.Hide();
             flowLayoutPanelDay.Controls.Clear();
 
+            buttonWordBefore.Hide();
+            buttonWordAfter.Hide();
+
             richTextBoxWord.Text = "";
             richTextBoxWord.Hide();
             checkBoxAuto.Hide();
@@ -199,8 +203,7 @@ namespace Main
         {
             if (id == "" || password == "")
             {
-
-                MessageBox.Show("아이디와 패스워드를 입력하세요.");
+                MessageBox.Show("아이디와 패스워드를 입력하세요.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 0;
             }
             try
@@ -239,18 +242,21 @@ namespace Main
                 }
                 else if (count > 1)
                 {//중복회원이 있는 경우
-                    MessageBox.Show("로그인 실패");
+                    MessageBox.Show("로그인에 실패하였습니다.", "경고", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //MessageBox.Show("로그인 실패");
                     return 0;
                 }
                 else
                 {
-                    MessageBox.Show("로그인 실패");
+                    MessageBox.Show("로그인에 실패하였습니다.", "경고", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // MessageBox.Show("로그인 실패");
                     return 0;
                 }
             }
             catch (Exception exception)
             {
-                MessageBox.Show(exception.Message);
+                MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
+//                MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return 0;
             }
         }
@@ -263,25 +269,28 @@ namespace Main
 
             if (id == "" || password == "" || passwordCheck == "")
             {
-                MessageBox.Show("아이디와 패스워드, 패스워드 확인값을 입력하세요.");
+                //MessageBox.Show("아이디와 패스워드, 패스워드 확인값을 입력하세요.");
+                MessageBox.Show("아이디와 패스워드, 패스워드 확인값을 입력하세요.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 0;
             }
             if (name == "")
             {
-                MessageBox.Show("이름은 필수값입니다.");
+                //MessageBox.Show("아이디와 패스워드, 패스워드 확인값을 입력하세요.");
+                MessageBox.Show("아이디와 패스워드, 패스워드 확인값을 입력하세요.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 0;
             }
             if (!password.Equals(passwordCheck))
             {
-                MessageBox.Show("패스워드 확인값이 패스워드와 동일하지 않습니다.");
+                //MessageBox.Show("패스워드 확인값이 패스워드와 동일하지 않습니다.");
+                MessageBox.Show("패스워드 확인값이 패스워드와 동일하지 않습니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 0;
             }
             try
             {
                 SqlConnection connection = new SqlConnection(connectionString);
                 SqlCommand command = new SqlCommand(
-                    "INSERT INTO user_mst (user_email, user_password, user_name, user_use_flag, user_email_checked, insert_user, update_user) " +
-                    "VALUES (@user_email, @user_password, @user_name, 1, 1, 1, 1)", connection);
+                    "INSERT INTO user_mst (user_email, user_password, user_name, user_use_flag, user_email_checked, insert_user, update_user, last_level) " +
+                    "VALUES (@user_email, @user_password, @user_name, 1, 1, 1, 1, 2)", connection);
                 command.Parameters.AddWithValue("@user_email", id);
                 command.Parameters.AddWithValue("@user_name", name);
                 command.Parameters.AddWithValue("@user_password", GetCrypt(password));
@@ -292,21 +301,22 @@ namespace Main
                 if (count == 1)
                 {
                     toolStripStatusLabelMain.Text = "회원가입 성공";
-
-                    userEmail = id;
-                    userName = name;
-                    userAuth = "USER";
+                    MessageBox.Show("회원가입에 성공하였습니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    /*
+                                        userEmail = id;
+                                        userName = name;
+                                        userAuth = "USER";*/
                     return 1;
                 }
                 else
                 {
-                    MessageBox.Show("회원가입 실패");
+                    MessageBox.Show("회원가입에 실패하였습니다.", "경고", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return 0;
                 }
             }
             catch (Exception exception)
             {
-                MessageBox.Show(exception.Message);
+                MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return 0;
             }
         }
@@ -358,7 +368,7 @@ namespace Main
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show(exception.Message);
+                        MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                     //시험 그룹 콤보박스 설치
@@ -380,7 +390,7 @@ namespace Main
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show(exception.Message);
+                        MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                     //시험 콤보박스 설치
@@ -402,7 +412,7 @@ namespace Main
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show(exception.Message);
+                        MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
                     //시험 레벨 콤보박스 설치
@@ -424,7 +434,7 @@ namespace Main
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show(exception.Message);
+                        MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
 
 
@@ -458,12 +468,12 @@ namespace Main
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show(exception.Message);
+                        MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
             }
@@ -490,7 +500,7 @@ namespace Main
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
 
@@ -1322,9 +1332,9 @@ namespace Main
                     toolStripStatusLabelMain.Text = "입력양식 내려받기 완료";
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                MessageBox.Show("에러 : " + ex.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1367,7 +1377,7 @@ namespace Main
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1410,7 +1420,7 @@ namespace Main
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1452,7 +1462,7 @@ namespace Main
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1503,7 +1513,7 @@ namespace Main
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(exception.Message);
+                    MessageBox.Show(exception.Message, "에러", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -1514,6 +1524,8 @@ namespace Main
         /// <param name="e"></param>
         void DayButton_Click(object sender, EventArgs e)
         {
+            buttonWordBefore.Hide();
+            buttonWordAfter.Hide();
             checkBoxAuto.Checked = false;
             checkBoxBlink.Hide();
             checkBoxBlink.Checked = false;
@@ -1627,9 +1639,14 @@ namespace Main
 
                 SqlConnection connection = new SqlConnection(connectionString);
                 SqlCommand command = new SqlCommand("UPDATE user_mst SET last_level = @last_level WHERE user_email = @user_email", connection);
-                command.Parameters.AddWithValue("@test_level_idx", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
+                command.Parameters.AddWithValue("@last_level", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
                 command.Parameters.AddWithValue("@user_email", userEmail);
+                connection.Open();
                 command.ExecuteNonQuery();
+                connection.Close();
+
+                buttonWordBefore.Show();
+                buttonWordAfter.Show();
             }
 
             //MessageBox.Show("Message here");
