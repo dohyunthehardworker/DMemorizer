@@ -41,9 +41,10 @@
             // buttonLogin
             // 
             this.buttonLogin.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonLogin.Location = new System.Drawing.Point(214, 154);
+            this.buttonLogin.Location = new System.Drawing.Point(150, 103);
+            this.buttonLogin.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonLogin.Name = "buttonLogin";
-            this.buttonLogin.Size = new System.Drawing.Size(75, 28);
+            this.buttonLogin.Size = new System.Drawing.Size(52, 19);
             this.buttonLogin.TabIndex = 3;
             this.buttonLogin.Text = "로그인";
             this.buttonLogin.UseVisualStyleBackColor = true;
@@ -51,27 +52,30 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(320, 154);
+            this.buttonCancel.Location = new System.Drawing.Point(224, 103);
+            this.buttonCancel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 28);
+            this.buttonCancel.Size = new System.Drawing.Size(52, 19);
             this.buttonCancel.TabIndex = 4;
             this.buttonCancel.Text = "취소";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
             // textBoxID
             // 
-            this.textBoxID.Location = new System.Drawing.Point(210, 62);
+            this.textBoxID.Location = new System.Drawing.Point(147, 41);
+            this.textBoxID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxID.Name = "textBoxID";
-            this.textBoxID.Size = new System.Drawing.Size(186, 28);
+            this.textBoxID.Size = new System.Drawing.Size(131, 21);
             this.textBoxID.TabIndex = 1;
-            this.textBoxID.Text = "lonelytrip@nate.com";
+            this.textBoxID.Text = "lldd";
             // 
             // textBoxPassword
             // 
-            this.textBoxPassword.Location = new System.Drawing.Point(210, 96);
+            this.textBoxPassword.Location = new System.Drawing.Point(147, 64);
+            this.textBoxPassword.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBoxPassword.Name = "textBoxPassword";
             this.textBoxPassword.PasswordChar = '*';
-            this.textBoxPassword.Size = new System.Drawing.Size(186, 28);
+            this.textBoxPassword.Size = new System.Drawing.Size(131, 21);
             this.textBoxPassword.TabIndex = 2;
             this.textBoxPassword.Text = "1234";
             this.textBoxPassword.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.textBoxPassword_KeyPress);
@@ -79,36 +83,39 @@
             // labelID
             // 
             this.labelID.AutoSize = true;
-            this.labelID.Location = new System.Drawing.Point(82, 65);
+            this.labelID.Location = new System.Drawing.Point(57, 43);
+            this.labelID.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelID.Name = "labelID";
-            this.labelID.Size = new System.Drawing.Size(62, 18);
+            this.labelID.Size = new System.Drawing.Size(41, 12);
             this.labelID.TabIndex = 4;
             this.labelID.Text = "이메일";
             // 
             // labelPassword
             // 
             this.labelPassword.AutoSize = true;
-            this.labelPassword.Location = new System.Drawing.Point(82, 99);
+            this.labelPassword.Location = new System.Drawing.Point(57, 66);
+            this.labelPassword.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.labelPassword.Name = "labelPassword";
-            this.labelPassword.Size = new System.Drawing.Size(80, 18);
+            this.labelPassword.Size = new System.Drawing.Size(53, 12);
             this.labelPassword.TabIndex = 5;
             this.labelPassword.Text = "패스워드";
             // 
             // buttonSignUp
             // 
             this.buttonSignUp.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.buttonSignUp.Location = new System.Drawing.Point(85, 154);
+            this.buttonSignUp.Location = new System.Drawing.Point(59, 103);
+            this.buttonSignUp.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.buttonSignUp.Name = "buttonSignUp";
-            this.buttonSignUp.Size = new System.Drawing.Size(98, 28);
+            this.buttonSignUp.Size = new System.Drawing.Size(69, 19);
             this.buttonSignUp.TabIndex = 5;
             this.buttonSignUp.Text = "회원가입";
             this.buttonSignUp.UseVisualStyleBackColor = true;
             // 
             // FormLogIn
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(478, 244);
+            this.ClientSize = new System.Drawing.Size(335, 163);
             this.Controls.Add(this.buttonSignUp);
             this.Controls.Add(this.labelPassword);
             this.Controls.Add(this.labelID);
@@ -117,6 +124,7 @@
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonLogin);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "FormLogIn";
             this.Text = "로그인";
             this.ResumeLayout(false);

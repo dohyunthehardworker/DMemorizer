@@ -53,6 +53,10 @@
             this.buttonWordBefore = new System.Windows.Forms.Button();
             this.buttonWordAfter = new System.Windows.Forms.Button();
             this.richTextBoxWord = new System.Windows.Forms.RichTextBox();
+            this.checkBoxRepeat = new System.Windows.Forms.CheckBox();
+            this.checkBoxRandom = new System.Windows.Forms.CheckBox();
+            this.checkBoxBlink = new System.Windows.Forms.CheckBox();
+            this.checkBoxAuto = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanelLogIn.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.statusStripMain.SuspendLayout();
@@ -289,6 +293,7 @@
             this.listViewWordList.TabIndex = 26;
             this.listViewWordList.UseCompatibleStateImageBehavior = false;
             this.listViewWordList.View = System.Windows.Forms.View.List;
+            this.listViewWordList.Visible = false;
             this.listViewWordList.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.listViewWordList_ItemSelectionChanged);
             // 
             // buttonWordBefore
@@ -328,11 +333,65 @@
             this.richTextBoxWord.TabIndex = 32;
             this.richTextBoxWord.Text = "";
             // 
+            // checkBoxRepeat
+            // 
+            this.checkBoxRepeat.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.checkBoxRepeat.AutoSize = true;
+            this.checkBoxRepeat.Location = new System.Drawing.Point(160, 444);
+            this.checkBoxRepeat.Name = "checkBoxRepeat";
+            this.checkBoxRepeat.Size = new System.Drawing.Size(48, 16);
+            this.checkBoxRepeat.TabIndex = 33;
+            this.checkBoxRepeat.Text = "반복";
+            this.checkBoxRepeat.UseVisualStyleBackColor = true;
+            this.checkBoxRepeat.Visible = false;
+            this.checkBoxRepeat.CheckedChanged += new System.EventHandler(this.checkBoxRepeat_CheckedChanged);
+            // 
+            // checkBoxRandom
+            // 
+            this.checkBoxRandom.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.checkBoxRandom.AutoSize = true;
+            this.checkBoxRandom.Location = new System.Drawing.Point(214, 444);
+            this.checkBoxRandom.Name = "checkBoxRandom";
+            this.checkBoxRandom.Size = new System.Drawing.Size(48, 16);
+            this.checkBoxRandom.TabIndex = 34;
+            this.checkBoxRandom.Text = "랜덤";
+            this.checkBoxRandom.UseVisualStyleBackColor = true;
+            this.checkBoxRandom.Visible = false;
+            // 
+            // checkBoxBlink
+            // 
+            this.checkBoxBlink.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.checkBoxBlink.AutoSize = true;
+            this.checkBoxBlink.Location = new System.Drawing.Point(268, 444);
+            this.checkBoxBlink.Name = "checkBoxBlink";
+            this.checkBoxBlink.Size = new System.Drawing.Size(60, 16);
+            this.checkBoxBlink.TabIndex = 35;
+            this.checkBoxBlink.Text = "깜빡이";
+            this.checkBoxBlink.UseVisualStyleBackColor = true;
+            this.checkBoxBlink.Visible = false;
+            // 
+            // checkBoxAuto
+            // 
+            this.checkBoxAuto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.checkBoxAuto.AutoSize = true;
+            this.checkBoxAuto.Location = new System.Drawing.Point(106, 444);
+            this.checkBoxAuto.Name = "checkBoxAuto";
+            this.checkBoxAuto.Size = new System.Drawing.Size(48, 16);
+            this.checkBoxAuto.TabIndex = 36;
+            this.checkBoxAuto.Text = "자동";
+            this.checkBoxAuto.UseVisualStyleBackColor = true;
+            this.checkBoxAuto.Visible = false;
+            this.checkBoxAuto.CheckedChanged += new System.EventHandler(this.checkBoxAuto_CheckedChanged);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(825, 496);
+            this.Controls.Add(this.checkBoxAuto);
+            this.Controls.Add(this.checkBoxBlink);
+            this.Controls.Add(this.checkBoxRandom);
+            this.Controls.Add(this.checkBoxRepeat);
             this.Controls.Add(this.richTextBoxWord);
             this.Controls.Add(this.buttonWordAfter);
             this.Controls.Add(this.buttonWordBefore);
@@ -348,7 +407,6 @@
             this.Name = "FormMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "단어 암기 프로그램";
-            this.Load += new System.EventHandler(this.FormMain_Load);
             this.Shown += new System.EventHandler(this.FormMain_Shown);
             this.flowLayoutPanelLogIn.ResumeLayout(false);
             this.flowLayoutPanelLogIn.PerformLayout();
@@ -388,6 +446,10 @@
         private System.Windows.Forms.Button buttonWordBefore;
         private System.Windows.Forms.Button buttonWordAfter;
         private System.Windows.Forms.RichTextBox richTextBoxWord;
+        private System.Windows.Forms.CheckBox checkBoxRepeat;
+        private System.Windows.Forms.CheckBox checkBoxRandom;
+        private System.Windows.Forms.CheckBox checkBoxBlink;
+        private System.Windows.Forms.CheckBox checkBoxAuto;
     }
 }
 

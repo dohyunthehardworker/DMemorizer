@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -18,20 +19,35 @@ namespace Main
 {
     public partial class FormMain : Form
     {
-        public string userName = "";
-        public string userEmail = "";
-        public string userAuth = "USER";
-        public int last_test_level = 0; //마지막 공부한 위치
+        string userName = "";
+        string userEmail = "";
+        string userAuth = "USER";
+        int last_test_level = 0; //마지막 공부한 위치
         int test_idx = 0;
         int test_group_idx = 0;
         int lang_idx = 0;
         bool comboLoaded = false;
         List<ClassWord> classWordlist;
         string connectionString = @"Data Source=leedohyun.asuscomm.com,1433;Initial Catalog=DMemorizer;User ID=sa;Password=P@ssw0rd;";
+        Random rnd = new Random();
+        bool blinkFlag = false; //깜빡이용 
+        string sheetName = "";
         public FormMain()
         {
             InitializeComponent();
-            this.WindowState = FormWindowState.Maximized;
+            //this.WindowState = FormWindowState.Maximized;
+
+            //2초
+            System.Timers.Timer autoTimer = new System.Timers.Timer(4000);
+            autoTimer.AutoReset = true;
+            autoTimer.Elapsed += new System.Timers.ElapsedEventHandler(AutoTimer);
+            autoTimer.Start();
+
+            //1초
+            System.Timers.Timer autoTimerSec = new System.Timers.Timer(500);
+            autoTimerSec.AutoReset = true;
+            autoTimerSec.Elapsed += new System.Timers.ElapsedEventHandler(AutoTimerSec);
+            autoTimerSec.Start();
 
         }
 
@@ -73,6 +89,8 @@ namespace Main
                     labelName.Text = userName;
                     setComboBoxLanguage();
                     flowLayoutPanelCombo.Visible = true;
+                    listViewWordList.Show();
+                    richTextBoxWord.Show();
                     comboLoaded = true;
                 }
                 else
@@ -90,8 +108,6 @@ namespace Main
             {
                 formSignUp.Close();
             }
-
-
         }
 
         /// <summary>
@@ -119,6 +135,8 @@ namespace Main
                     setComboBoxLanguage();
                     flowLayoutPanelCombo.Visible = true;
                     comboLoaded = true;
+                    listViewWordList.Show();
+                    richTextBoxWord.Show();
                 }
                 else
                 {
@@ -158,6 +176,19 @@ namespace Main
             toolStripStatusLabelMain.Text = "로그아웃 성공";
             flowLayoutPanelCombo.Visible = false;
             comboLoaded = false;
+            listViewWordList.Hide();
+            flowLayoutPanelDay.Controls.Clear();
+
+            richTextBoxWord.Text = "";
+            richTextBoxWord.Hide();
+            checkBoxAuto.Hide();
+            checkBoxAuto.Checked = false;
+            checkBoxBlink.Hide();
+            checkBoxBlink.Checked = false;
+            checkBoxRandom.Hide();
+            checkBoxRandom.Checked = false;
+            checkBoxRepeat.Hide();
+            checkBoxRepeat.Checked = false;
             LogIn();
         }
 
@@ -191,9 +222,7 @@ namespace Main
                     userEmail = dataSet.Tables[0].Rows[0]["user_email"].ToString();
                     userName = dataSet.Tables[0].Rows[0]["user_name"].ToString();
 
-                    object value = dataSet.Tables[0].Rows[0]["last_level"];
-
-                    if (value != DBNull.Value)
+                    if (dataSet.Tables[0].Rows[0]["last_level"] != DBNull.Value)
                     {
                         last_test_level = (int)dataSet.Tables[0].Rows[0]["last_level"];
                     }
@@ -472,19 +501,78 @@ namespace Main
 
         }
 
+        /// <summary>
+        /// 자동 학습용 타이머
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AutoTimer(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            
+            //자동으로 체크가 되어 있으면 
+            if (checkBoxAuto.Checked)
+            {
+                if (listViewWordList.SelectedIndices.Count <= 0)
+                {
+                    listViewWordList.Items[0].Selected = true;
+                }
+
+                int intselectedindex = listViewWordList.SelectedIndices[0];
+                if (checkBoxRepeat.Checked)
+                {//반복 체크가 되어 있는 경우
+
+                    if (checkBoxRandom.Checked)
+                    {
+                        listViewWordList.Items[rnd.Next(0, listViewWordList.Items.Count)].Selected = true;
+                    }
+                    else
+                    {//랜덤 체크가 되어 있지 않은 경우
+                        if (listViewWordList.SelectedIndices[0] == listViewWordList.Items.Count - 1)
+                        {
+                            listViewWordList.Items[0].Selected = true;
+                        }
+                        else
+                        {
+                            listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
+                        }
+                    }
+                }
+                else
+                {//반복체크가 되어 있지 않은 경우
+                    if (listViewWordList.SelectedIndices[0] != listViewWordList.Items.Count - 1)
+                    {
+                        listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// 깜빡이 타이머
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void AutoTimerSec(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (checkBoxBlink.Checked)
+            {
+                if (blinkFlag)
+                {
+                    richTextBoxWord.Hide();
+                    blinkFlag = false;
+                }
+                else
+                {
+                    richTextBoxWord.Show();
+                    blinkFlag = true;
+                }
+            }
+
+        }
+
         /***********************************************************************************
         이벤트함수           
         ************************************************************************************/
 
-        /// <summary>
-        /// 화면 로드 시 동작
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FormMain_Load(object sender, EventArgs e)
-        {
-
-        }
         /// <summary>
         /// 화면 로드 완료 후 동작 이벤트
         /// </summary>
@@ -540,6 +628,14 @@ namespace Main
         /// <param name="e"></param>
         private void 내보내기ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //내보낼 데이터 있는지 체크
+
+            if (listViewWordList.SelectedIndices.Count <= 0)
+            {
+                MessageBox.Show("저장할 데이터가 존재하지 않습니다.", "경고", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
                 SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -547,7 +643,7 @@ namespace Main
                 saveFileDialog.FilterIndex = 1;
                 saveFileDialog.RestoreDirectory = true;
                 saveFileDialog.Title = "엑셀 파일 저장";
-                saveFileDialog.FileName = "기본이름";   //기본 이름 설정
+                saveFileDialog.FileName = sheetName;   //기본 이름 설정
                 if (saveFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     String filepath = "";
@@ -568,15 +664,72 @@ namespace Main
 
                         //단어 입력 로직 추가
 
-                        worksheet.Name = "테스트";                             // 시트 이름 설정
-                        Excel.Range range = worksheet.Cells[1, 1];               //입력 범위 지정
-                        range.Value = "테스트입력";                              //입력 값 설정
-
+                        worksheet.Name = sheetName;                             // 시트 이름 설정
+                        Excel.Range range;
                         //Excel.Worksheet worksheet = workbook.Worksheets.Add();  //새 시트 추가
+                        for (int i = 0; i < classWordlist.Count; i++)
+                        {
+                            ClassWord classWord = classWordlist[i];
 
-                        MessageBox.Show("저장되었습니다.", "저장", MessageBoxButtons.OK, MessageBoxIcon.Information);//내용, 제목, 확인 버튼, 가운데 이모티콘
+                            if (i == 0)
+                            {//첫번째 열에 칼럼명 추가
+                                range = worksheet.Cells[i + 1, 1];               //입력 범위 지정
+                                range.Value = "순번";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 2];               //입력 범위 지정
+                                range.Value = "단어";                              //입력 값 설정                                
+                                range = worksheet.Cells[i + 1, 3];               //입력 범위 지정
+                                range.Value = "발음";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 4];               //입력 범위 지정
+                                range.Value = "품사";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 5];               //입력 범위 지정
+                                range.Value = "뜻";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 6];               //입력 범위 지정
+                                range.Value = "품사2";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 7];               //입력 범위 지정
+                                range.Value = "뜻2";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 8];               //입력 범위 지정
+                                range.Value = "품사3";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 9];               //입력 범위 지정
+                                range.Value = "뜻3";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 10];               //입력 범위 지정
+                                range.Value = "품사4";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 11];               //입력 범위 지정
+                                range.Value = "뜻4";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 12];               //입력 범위 지정
+                                range.Value = "품사5";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 13];               //입력 범위 지정
+                                range.Value = "뜻5";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 14];               //입력 범위 지정
+                                range.Value = "품사6";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 15];               //입력 범위 지정
+                                range.Value = "뜻7";                              //입력 값 설정
+                                range = worksheet.Cells[i + 1, 16];               //입력 범위 지정
+                                range.Value = "뜻7";                              //입력 값 설정
+                            }
+
+                            range = worksheet.Cells[i + 2, 1];               //입력 범위 지정
+                            range.Value = i+1;                              //입력 값 설정
+                            range = worksheet.Cells[i + 2, 2];               //입력 범위 지정
+                            range.Value = classWord.Word;
+
+                            for (int j = 0; j < classWord.WordDetailList.Count; j++)
+                            {
+                                ClassWordDetail classWordDetail = classWord.WordDetailList[j];
+                                if (j == 0)
+                                {
+                                    range = worksheet.Cells[i + 2, 3];               //입력 범위 지정
+                                    range.Value = classWordDetail.WordPronounce;
+                                }
+                                range = worksheet.Cells[i + 2, 4 + (j * 2)];               //입력 범위 지정
+                                range.Value = classWordDetail.WordParts;
+                                range = worksheet.Cells[i + 2, 5 + +(j * 2)];               //입력 범위 지정
+                                range.Value = classWordDetail.WordMeaning;
+                            }
+
+                        }
                         workbook.SaveAs(filepath);
                         workbook.Close();
+                        MessageBox.Show("저장되었습니다.", "저장", MessageBoxButtons.OK, MessageBoxIcon.Information);//내용, 제목, 확인 버튼, 가운데 이모티콘
                     }
                     toolStripStatusLabelMain.Text = "오늘의 단어 엑셀 저장하기 완료";
                 }
@@ -644,8 +797,6 @@ namespace Main
                         int result = 0;
                         if (j == 3)
                         {//세번째 행의 데이터로 등급명 까지 확인하고 입력한다.
-
-
 
                             //1. 언어기본키값 가져오기
 
@@ -878,7 +1029,7 @@ namespace Main
                                             command = new SqlCommand(query, connection);
                                             command.Parameters.AddWithValue("@test_level_name", test_level_name);
                                             command.Parameters.AddWithValue("@test_idx", test_idx);
-                                            
+
                                             dataAdapter = new SqlDataAdapter(command);
                                             dataSet = new DataSet();
                                             dataAdapter.Fill(dataSet);
@@ -1188,31 +1339,37 @@ namespace Main
             {
                 try
                 {
-                    //MessageBox.Show("comboBoxLanguage_SelectedIndexChanged");
                     SqlConnection connection = new SqlConnection(connectionString);
                     SqlCommand command = new SqlCommand("SELECT * FROM test_group_mst WHERE lang_idx = @lang_idx", connection);
-                    command.Parameters.AddWithValue("@lang_idx", Int32.Parse(comboBoxLanguage.SelectedValue.ToString()));
+                    command.Parameters.AddWithValue("@lang_idx", comboBoxLanguage.SelectedValue.ToString());
                     connection.Open();
                     SqlDataAdapter dataAdapter = new SqlDataAdapter(command);
                     DataSet dataSet = new DataSet();
                     dataAdapter.Fill(dataSet);
                     connection.Close();
                     int count = dataSet.Tables[0].Rows.Count;
-                    comboBoxTestGroup.DataSource = dataSet.Tables[0];
                     comboBoxTestGroup.DisplayMember = "test_group_name";
                     comboBoxTestGroup.ValueMember = "test_group_idx";
-
+                    comboBoxTestGroup.DataSource = dataSet.Tables[0];
+                    
                     comboBoxTestGroup.Show();
                     comboBoxTest.Hide();
                     comboBoxTestLevel.Hide();
                     flowLayoutPanelDay.Hide();
+                    checkBoxAuto.Hide();
+                    checkBoxAuto.Checked = false;
+                    checkBoxBlink.Hide();
+                    checkBoxBlink.Checked = false;
+                    checkBoxRandom.Hide();
+                    checkBoxRandom.Checked = false;
+                    checkBoxRepeat.Hide();
+                    checkBoxRepeat.Checked = false;
                 }
                 catch (Exception exception)
                 {
                     MessageBox.Show(exception.Message);
                 }
             }
-
         }
         /// <summary>
         /// 시험그룹 콤보박스 선택 변경
@@ -1242,6 +1399,14 @@ namespace Main
                     comboBoxTest.Show();
                     comboBoxTestLevel.Hide();
                     flowLayoutPanelDay.Hide();
+                    checkBoxAuto.Hide();
+                    checkBoxAuto.Checked = false;
+                    checkBoxBlink.Hide();
+                    checkBoxBlink.Checked = false;
+                    checkBoxRandom.Hide();
+                    checkBoxRandom.Checked = false;
+                    checkBoxRepeat.Hide();
+                    checkBoxRepeat.Checked = false;
                 }
                 catch (Exception exception)
                 {
@@ -1276,6 +1441,14 @@ namespace Main
                     //if(count != 0)
                     comboBoxTestLevel.Show();
                     flowLayoutPanelDay.Hide();
+                    checkBoxAuto.Hide();
+                    checkBoxAuto.Checked = false;
+                    checkBoxBlink.Hide();
+                    checkBoxBlink.Checked = false;
+                    checkBoxRandom.Hide();
+                    checkBoxRandom.Checked = false;
+                    checkBoxRepeat.Hide();
+                    checkBoxRepeat.Checked = false;
                 }
                 catch (Exception exception)
                 {
@@ -1319,6 +1492,14 @@ namespace Main
                         flowLayoutPanelDay.Controls.Add(button);
                     }
                     flowLayoutPanelDay.Show();
+                    checkBoxAuto.Hide();
+                    checkBoxAuto.Checked = false;
+                    checkBoxBlink.Hide();
+                    checkBoxBlink.Checked = false;
+                    checkBoxRandom.Hide();
+                    checkBoxRandom.Checked = false;
+                    checkBoxRepeat.Hide();
+                    checkBoxRepeat.Checked = false;
                 }
                 catch (Exception exception)
                 {
@@ -1333,6 +1514,14 @@ namespace Main
         /// <param name="e"></param>
         void DayButton_Click(object sender, EventArgs e)
         {
+            checkBoxAuto.Checked = false;
+            checkBoxBlink.Hide();
+            checkBoxBlink.Checked = false;
+            checkBoxRandom.Hide();
+            checkBoxRandom.Checked = false;
+            checkBoxRepeat.Hide();
+            checkBoxRepeat.Checked = false;
+
             //listViewWordList.View = View.Details;
             richTextBoxWord.Text = "";
 
@@ -1341,6 +1530,7 @@ namespace Main
             {
                 //MessageBox.Show(button.Text.ToString().Replace("Day", "").Trim());
                 string day = button.Text.ToString().Replace("Day", "").Trim();
+                sheetName = button.Text.ToString();
                 //일자별 데이터 전체 호출
                 SqlConnection connection = new SqlConnection(connectionString);
                 SqlCommand command = new SqlCommand("SELECT m.word, m.word_dup_no, m.word_idx, d.word_pronounce, d.word_parts, d.word_meaning FROM word_mst m INNER JOIN word_dtl d ON m.word_idx = d.word_idx WHERE m.test_level_idx = @test_level_idx AND m.word_day_info = @word_day_info ORDER BY m.word_idx;", connection);
@@ -1430,6 +1620,19 @@ namespace Main
                 listViewWordList.Items.Add(classWordlist[i].Word).SubItems.Add(classWordlist[i].WordIdx.ToString());
                 
             }
+            if (classWordlist.Count() > 0)
+            {
+                checkBoxAuto.Show();
+                listViewWordList.Items[0].Selected = true;
+
+                SqlConnection connection = new SqlConnection(connectionString);
+                SqlCommand command = new SqlCommand("UPDATE user_mst SET last_level = @last_level WHERE user_email = @user_email", connection);
+                command.Parameters.AddWithValue("@test_level_idx", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
+                command.Parameters.AddWithValue("@user_email", userEmail);
+                //command.ExecuteNonQuery();
+                
+            }
+
             //MessageBox.Show("Message here");
         }
 
@@ -1449,7 +1652,7 @@ namespace Main
             {
                 String text = listViewWordList.Items[intselectedindex].Text;
                 richTextBoxWord.Clear();
-                richTextBoxWord.SelectionFont = new Font("굴림", 96, FontStyle.Bold);
+                richTextBoxWord.SelectionFont = new Font("굴림", 70, FontStyle.Bold);
                 richTextBoxWord.AppendText(text);
                 richTextBoxWord.SelectionAlignment = HorizontalAlignment.Center;
 
@@ -1464,24 +1667,20 @@ namespace Main
                 bool flag = true;
                 foreach (ClassWordDetail details in classWordDetaillist)
                 {
-                    richTextBoxWord.SelectionFont = new Font("굴림", 52, FontStyle.Regular);
-                    if(flag)
+                    richTextBoxWord.SelectionFont = new Font("굴림", 40, FontStyle.Regular);
+                    if (flag)
                     {
                         richTextBoxWord.AppendText("\n[ " + details.WordPronounce + " ]\n");
                         flag = false;
                     }
-                    
+
                     richTextBoxWord.SelectionFont = new Font("굴림", 20, FontStyle.Regular);
                     richTextBoxWord.AppendText("\n【" + details.WordParts + "】 " + details.WordMeaning);
                 }
 
-                
-
                 //textBoxPronounce.Top = textBoxWord.Bottom;
                 //textBoxPronounce.Left = (this.ClientSize.Width - textBoxPronounce.Width) / 2;
             }
-
-            //MessageBox.Show(listViewWordList.SelectedItems[0].Text);
         }
         /// <summary>
         /// 이전버튼 클릭 이벤트
@@ -1492,11 +1691,11 @@ namespace Main
         {
             if (listViewWordList.SelectedIndices[0] == 0)
             {
-                listViewWordList.Items[listViewWordList.Items.Count -1 ].Selected = true;
+                listViewWordList.Items[listViewWordList.Items.Count - 1].Selected = true;
             }
             else
             {
-                listViewWordList.Items[listViewWordList.SelectedIndices[0] -1].Selected = true;
+                listViewWordList.Items[listViewWordList.SelectedIndices[0] - 1].Selected = true;
             }
         }
         /// <summary>
@@ -1514,6 +1713,50 @@ namespace Main
             {
                 listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
             }
+        }
+        /// <summary>
+        /// 자동 체크 박스 체크 변경 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBoxAuto_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxAuto.Checked)
+            {
+                //checkBoxBlink.Show();
+                //checkBoxRandom.Show();
+                checkBoxRepeat.Show();
+            }
+            else
+            {
+                checkBoxBlink.Hide();
+                checkBoxBlink.Checked = false;
+                checkBoxRandom.Hide();
+                checkBoxRandom.Checked = false;
+                checkBoxRepeat.Hide();
+                checkBoxRepeat.Checked = false;
+            }
+        }
+        /// <summary>
+        /// 반복 체크 박스 체크 변경 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBoxRepeat_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBoxRepeat.Checked)
+            {
+                checkBoxBlink.Show();
+                checkBoxRandom.Show();
+            }
+            else
+            {
+                checkBoxBlink.Hide();
+                checkBoxBlink.Checked = false;
+                checkBoxRandom.Hide();
+                checkBoxRandom.Checked = false;
+            }
+
         }
     }
 }
