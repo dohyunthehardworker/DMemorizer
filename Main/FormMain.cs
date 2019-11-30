@@ -1629,8 +1629,7 @@ namespace Main
                 SqlCommand command = new SqlCommand("UPDATE user_mst SET last_level = @last_level WHERE user_email = @user_email", connection);
                 command.Parameters.AddWithValue("@test_level_idx", Int32.Parse(comboBoxTestLevel.SelectedValue.ToString()));
                 command.Parameters.AddWithValue("@user_email", userEmail);
-                //command.ExecuteNonQuery();
-                
+                command.ExecuteNonQuery();
             }
 
             //MessageBox.Show("Message here");
