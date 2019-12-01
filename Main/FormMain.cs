@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,7 +31,7 @@ namespace Main
         bool comboLoaded = false;
         List<ClassWord> classWordlist;
         string connectionString = @"Data Source=leedohyun.asuscomm.com,1433;Initial Catalog=DMemorizer;User ID=sa;Password=P@ssw0rd;";
-        Random rnd = new Random();
+        Random random = new Random();
         bool blinkFlag = false; //깜빡이용 
         string sheetName = "";
         int timerCheck = 0;
@@ -283,6 +284,12 @@ namespace Main
                 MessageBox.Show("패스워드 확인값이 패스워드와 동일하지 않습니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return 0;
             }
+            if (!Regex.IsMatch(id, @"[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?"))
+            {
+                MessageBox.Show("이메일 형식이 아닙니다.", "알림", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return 0;
+            }
+
             try
             {
                 SqlConnection connection = new SqlConnection(connectionString);
@@ -549,7 +556,7 @@ namespace Main
 
                         if (checkBoxRandom.Checked)
                         {
-                            listViewWordList.Items[rnd.Next(0, listViewWordList.Items.Count)].Selected = true;
+                            listViewWordList.Items[random.Next(0, listViewWordList.Items.Count)].Selected = true;
                         }
                         else
                         {//랜덤 체크가 되어 있지 않은 경우

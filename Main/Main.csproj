@@ -27,7 +27,7 @@
     <ProductName>DMemorizer</ProductName>
     <PublisherName>Dohyun Lee</PublisherName>
     <SuiteName>DSelection</SuiteName>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -158,6 +158,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="단어학습프로그램_요약본.docx" />
+    <None Include="단어학습프로그램.pptx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
