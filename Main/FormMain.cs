@@ -1371,6 +1371,10 @@ namespace Main
                     checkBoxRandom.Checked = false;
                     checkBoxRepeat.Hide();
                     checkBoxRepeat.Checked = false;
+                    if (count == 1)
+                    {
+                        comboBoxTestGroup.SelectedIndex = 0;
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -1414,6 +1418,11 @@ namespace Main
                     checkBoxRandom.Checked = false;
                     checkBoxRepeat.Hide();
                     checkBoxRepeat.Checked = false;
+
+                    if (count == 1)
+                    {
+                        comboBoxTest.SelectedIndex = 0;
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -1456,6 +1465,11 @@ namespace Main
                     checkBoxRandom.Checked = false;
                     checkBoxRepeat.Hide();
                     checkBoxRepeat.Checked = false;
+
+                    if (count == 1)
+                    {
+                        comboBoxTestLevel.SelectedIndex = 0;
+                    }
                 }
                 catch (Exception exception)
                 {
