@@ -57,10 +57,18 @@
             this.checkBoxRandom = new System.Windows.Forms.CheckBox();
             this.checkBoxBlink = new System.Windows.Forms.CheckBox();
             this.checkBoxAuto = new System.Windows.Forms.CheckBox();
+            this.flowLayoutPanelAuto = new System.Windows.Forms.FlowLayoutPanel();
+            this.labelAuto = new System.Windows.Forms.Label();
+            this.numericUpDownAuto = new System.Windows.Forms.NumericUpDown();
+            this.labelBlink = new System.Windows.Forms.Label();
+            this.numericUpDownBlink = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanelLogIn.SuspendLayout();
             this.menuStripMain.SuspendLayout();
             this.statusStripMain.SuspendLayout();
             this.flowLayoutPanelCombo.SuspendLayout();
+            this.flowLayoutPanelAuto.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAuto)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBlink)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanelLogIn
@@ -373,6 +381,7 @@
             this.checkBoxBlink.Text = "깜빡이";
             this.checkBoxBlink.UseVisualStyleBackColor = true;
             this.checkBoxBlink.Visible = false;
+            this.checkBoxBlink.CheckedChanged += new System.EventHandler(this.checkBoxBlink_CheckedChanged);
             // 
             // checkBoxAuto
             // 
@@ -387,11 +396,100 @@
             this.checkBoxAuto.Visible = false;
             this.checkBoxAuto.CheckedChanged += new System.EventHandler(this.checkBoxAuto_CheckedChanged);
             // 
+            // flowLayoutPanelAuto
+            // 
+            this.flowLayoutPanelAuto.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.flowLayoutPanelAuto.Controls.Add(this.labelAuto);
+            this.flowLayoutPanelAuto.Controls.Add(this.numericUpDownAuto);
+            this.flowLayoutPanelAuto.Controls.Add(this.labelBlink);
+            this.flowLayoutPanelAuto.Controls.Add(this.numericUpDownBlink);
+            this.flowLayoutPanelAuto.Location = new System.Drawing.Point(110, 414);
+            this.flowLayoutPanelAuto.Name = "flowLayoutPanelAuto";
+            this.flowLayoutPanelAuto.Size = new System.Drawing.Size(240, 24);
+            this.flowLayoutPanelAuto.TabIndex = 38;
+            // 
+            // labelAuto
+            // 
+            this.labelAuto.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelAuto.AutoSize = true;
+            this.labelAuto.Location = new System.Drawing.Point(3, 7);
+            this.labelAuto.Name = "labelAuto";
+            this.labelAuto.Size = new System.Drawing.Size(61, 12);
+            this.labelAuto.TabIndex = 1;
+            this.labelAuto.Text = "자동(Sec)";
+            this.labelAuto.Visible = false;
+            // 
+            // numericUpDownAuto
+            // 
+            this.numericUpDownAuto.Location = new System.Drawing.Point(70, 3);
+            this.numericUpDownAuto.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDownAuto.Minimum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.numericUpDownAuto.Name = "numericUpDownAuto";
+            this.numericUpDownAuto.Size = new System.Drawing.Size(37, 21);
+            this.numericUpDownAuto.TabIndex = 0;
+            this.numericUpDownAuto.Value = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.numericUpDownAuto.Visible = false;
+            this.numericUpDownAuto.ValueChanged += new System.EventHandler(this.numericUpDownAuto_ValueChanged);
+            // 
+            // labelBlink
+            // 
+            this.labelBlink.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.labelBlink.AutoSize = true;
+            this.labelBlink.Location = new System.Drawing.Point(113, 7);
+            this.labelBlink.Name = "labelBlink";
+            this.labelBlink.Size = new System.Drawing.Size(73, 12);
+            this.labelBlink.TabIndex = 3;
+            this.labelBlink.Text = "깜빡이(Sec)";
+            this.labelBlink.Visible = false;
+            // 
+            // numericUpDownBlink
+            // 
+            this.numericUpDownBlink.DecimalPlaces = 1;
+            this.numericUpDownBlink.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUpDownBlink.Location = new System.Drawing.Point(192, 3);
+            this.numericUpDownBlink.Maximum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+            this.numericUpDownBlink.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUpDownBlink.Name = "numericUpDownBlink";
+            this.numericUpDownBlink.Size = new System.Drawing.Size(36, 21);
+            this.numericUpDownBlink.TabIndex = 2;
+            this.numericUpDownBlink.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUpDownBlink.Visible = false;
+            this.numericUpDownBlink.ValueChanged += new System.EventHandler(this.numericUpDownBlink_ValueChanged);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(825, 496);
+            this.Controls.Add(this.flowLayoutPanelAuto);
             this.Controls.Add(this.checkBoxAuto);
             this.Controls.Add(this.checkBoxBlink);
             this.Controls.Add(this.checkBoxRandom);
@@ -419,6 +517,10 @@
             this.statusStripMain.ResumeLayout(false);
             this.statusStripMain.PerformLayout();
             this.flowLayoutPanelCombo.ResumeLayout(false);
+            this.flowLayoutPanelAuto.ResumeLayout(false);
+            this.flowLayoutPanelAuto.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownAuto)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDownBlink)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -454,6 +556,11 @@
         private System.Windows.Forms.CheckBox checkBoxRandom;
         private System.Windows.Forms.CheckBox checkBoxBlink;
         private System.Windows.Forms.CheckBox checkBoxAuto;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelAuto;
+        private System.Windows.Forms.Label labelAuto;
+        private System.Windows.Forms.NumericUpDown numericUpDownAuto;
+        private System.Windows.Forms.Label labelBlink;
+        private System.Windows.Forms.NumericUpDown numericUpDownBlink;
     }
 }
 

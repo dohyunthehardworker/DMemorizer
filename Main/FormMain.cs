@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -32,23 +33,20 @@ namespace Main
         Random rnd = new Random();
         bool blinkFlag = false; //깜빡이용 
         string sheetName = "";
+        int timerCheck = 0;
+        int changeTime = 4;
+        double blinkSec = 1;
+        System.Timers.Timer autoTimerSec;
         public FormMain()
         {
             InitializeComponent();
             //this.WindowState = FormWindowState.Maximized;
 
-            //2초
-            System.Timers.Timer autoTimer = new System.Timers.Timer(3000);
-            autoTimer.AutoReset = true;
-            autoTimer.Elapsed += new System.Timers.ElapsedEventHandler(AutoTimer);
-            autoTimer.Start();
-
             //1초
-            System.Timers.Timer autoTimerSec = new System.Timers.Timer(500);
+            autoTimerSec = new System.Timers.Timer(blinkSec*1000);
             autoTimerSec.AutoReset = true;
             autoTimerSec.Elapsed += new System.Timers.ElapsedEventHandler(AutoTimerSec);
             autoTimerSec.Start();
-
         }
 
         /***********************************************************************************
@@ -512,51 +510,6 @@ namespace Main
         }
 
         /// <summary>
-        /// 자동 학습용 타이머
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void AutoTimer(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            
-            //자동으로 체크가 되어 있으면 
-            if (checkBoxAuto.Checked)
-            {
-                if (listViewWordList.SelectedIndices.Count <= 0)
-                {
-                    listViewWordList.Items[0].Selected = true;
-                }
-
-                int intselectedindex = listViewWordList.SelectedIndices[0];
-                if (checkBoxRepeat.Checked)
-                {//반복 체크가 되어 있는 경우
-
-                    if (checkBoxRandom.Checked)
-                    {
-                        listViewWordList.Items[rnd.Next(0, listViewWordList.Items.Count)].Selected = true;
-                    }
-                    else
-                    {//랜덤 체크가 되어 있지 않은 경우
-                        if (listViewWordList.SelectedIndices[0] == listViewWordList.Items.Count - 1)
-                        {
-                            listViewWordList.Items[0].Selected = true;
-                        }
-                        else
-                        {
-                            listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
-                        }
-                    }
-                }
-                else
-                {//반복체크가 되어 있지 않은 경우
-                    if (listViewWordList.SelectedIndices[0] != listViewWordList.Items.Count - 1)
-                    {
-                        listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
-                    }
-                }
-            }
-        }
-        /// <summary>
         /// 깜빡이 타이머
         /// </summary>
         /// <param name="sender"></param>
@@ -577,6 +530,51 @@ namespace Main
                 }
             }
 
+            if (timerCheck < changeTime)
+            {
+                timerCheck++;
+            }
+            else
+            {//자동으로 체크가 되어 있으면 
+                if (checkBoxAuto.Checked)
+                {
+                    if (listViewWordList.SelectedIndices.Count <= 0)
+                    {
+                        listViewWordList.Items[0].Selected = true;
+                    }
+
+                    int intselectedindex = listViewWordList.SelectedIndices[0];
+                    if (checkBoxRepeat.Checked)
+                    {//반복 체크가 되어 있는 경우
+
+                        if (checkBoxRandom.Checked)
+                        {
+                            listViewWordList.Items[rnd.Next(0, listViewWordList.Items.Count)].Selected = true;
+                        }
+                        else
+                        {//랜덤 체크가 되어 있지 않은 경우
+                            if (listViewWordList.SelectedIndices[0] == listViewWordList.Items.Count - 1)
+                            {
+                                listViewWordList.Items[0].Selected = true;
+                            }
+                            else
+                            {
+                                listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
+                            }
+                        }
+                    }
+                    else
+                    {//반복체크가 되어 있지 않은 경우
+                        if (listViewWordList.SelectedIndices[0] != listViewWordList.Items.Count - 1)
+                        {
+                            listViewWordList.Items[listViewWordList.SelectedIndices[0] + 1].Selected = true;
+                        }
+                    }
+                }
+                timerCheck = 0;
+            }
+
+
         }
 
         /***********************************************************************************
@@ -591,7 +589,6 @@ namespace Main
         private void FormMain_Shown(object sender, EventArgs e)
         {
             LogIn();
-
         }
         /// <summary>
         /// 회원 가입 버튼 클릭 이벤트
@@ -1666,6 +1663,7 @@ namespace Main
             int intselectedindex = listViewWordList.SelectedIndices[0];
             if (intselectedindex >= 0)
             {
+                
                 String text = listViewWordList.Items[intselectedindex].Text;
                 richTextBoxWord.Clear();
                 richTextBoxWord.SelectionFont = new Font("굴림", 70, FontStyle.Bold);
@@ -1742,6 +1740,8 @@ namespace Main
                 //checkBoxBlink.Show();
                 //checkBoxRandom.Show();
                 checkBoxRepeat.Show();
+                labelAuto.Show();
+                numericUpDownAuto.Show();
             }
             else
             {
@@ -1751,6 +1751,10 @@ namespace Main
                 checkBoxRandom.Checked = false;
                 checkBoxRepeat.Hide();
                 checkBoxRepeat.Checked = false;
+                labelAuto.Hide();
+                numericUpDownAuto.Hide();
+                changeTime = 4;
+                numericUpDownAuto.Value = 4;
             }
         }
         /// <summary>
@@ -1773,6 +1777,37 @@ namespace Main
                 checkBoxRandom.Checked = false;
             }
 
+        }
+        /// <summary>
+        /// 깜빡이 체크 박스 체크 변경 이벤트
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void checkBoxBlink_CheckedChanged(object sender, EventArgs e)
+        {
+        }
+        /// <summary>
+        /// 자동 시간 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numericUpDownAuto_ValueChanged(object sender, EventArgs e)
+        {
+            changeTime = (int)numericUpDownAuto.Value;
+        }
+        /// <summary>
+        /// 깜빡이 시간 변경
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void numericUpDownBlink_ValueChanged(object sender, EventArgs e)
+        {
+            blinkSec = (double)numericUpDownBlink.Value;
+
+            autoTimerSec.Interval = blinkSec * 1000;
+            //autoTimerSec.AutoReset = true;
+            //autoTimerSec.Elapsed += new System.Timers.ElapsedEventHandler(AutoTimerSec);
+            //autoTimerSec.Start();
         }
     }
 }
