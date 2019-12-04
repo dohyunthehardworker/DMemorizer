@@ -30,7 +30,7 @@ namespace Main
         int lang_idx = 0;
         bool comboLoaded = false;
         List<ClassWord> classWordlist;
-        string connectionString = @"Data Source=leedohyun.asuscomm.com,1433;Initial Catalog=DMemorizer;User ID=sa;Password=P@ssw0rd;";
+        string connectionString = @"Data Source=leedohyun.asuscomm.com,1433;Initial Catalog=DMemorizer;User ID=DMemorizer;Password=P@ssw0rd;";
         Random random = new Random();
         bool blinkFlag = false; //깜빡이용 
         string sheetName = "";
